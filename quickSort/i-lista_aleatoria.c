@@ -2,6 +2,21 @@
 #include <stdlib.h>
 #include <time.h>
 
+void writeNumbersToFile(char* filename, int arr[], int size) {
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Não foi possível abrir o arquivo %s\n", filename);
+        return;
+    }
+
+    for (int i = 0; i < size; i++) {
+        fprintf(file, "%d ", arr[i]);
+    }
+
+    fclose(file);
+}
+
+
 // Trocar elementos
 void swap(int* a, int* b) {
     int t = *a;
@@ -89,30 +104,43 @@ int main() {
     int numSizes = sizeof(sizes) / sizeof(sizes[0]);
     char* pivotStrategies[] = {"Original", "Mediana de três", "Amostragem aleatória"};
 
- for (int i = 0; i < numSizes; i++) {
-    for (int j = 0; j < 3; j++) {
-        int* arr = malloc(sizes[i] * sizeof(int));
+    for (int i = 0; i < numSizes; i++) {
+        for (int j = 0; j < 3; j++) {
+            int* arr = malloc(sizes[i] * sizeof(int));
 
-        generateRandomNumbers(arr, sizes[i]);
+            char filename[50];
+            sprintf(filename, "../randomFiles/%d.txt", sizes[i]);
 
-        long long int comparisons = 0;
-        long long int swaps = 0;
+            // Gerar novos números aleatórios se já não tiver esses arquivos.
+            FILE* file = fopen(filename, "r");
+            if (file == NULL) {
+                generateRandomNumbers(arr, sizes[i]);
+                writeNumbersToFile(filename, arr, sizes[i]);
+            } else {
+                for (int k = 0; k < sizes[i]; k++) {
+                    fscanf(file, "%d", &arr[k]);
+                }
+                fclose(file);
+            }
 
-        clock_t start = clock();
-        quickSort(arr, 0, sizes[i] - 1, &comparisons, &swaps, j);
-        clock_t end = clock();
+            long long int comparisons = 0;
+            long long int swaps = 0;
 
-        double runtime = (double)(end - start) / CLOCKS_PER_SEC;
+            clock_t start = clock();
+            quickSort(arr, 0, sizes[i] - 1, &comparisons, &swaps, j);
+            clock_t end = clock();
 
-        printf("\n**** Lista aleatória de tamanho [%d] com estratégia de pivô [%s] **** ", sizes[i], pivotStrategies[j]);
-        printf("\n\nComparações: %lld\n", comparisons);
-        printf("Swaps: %lld\n", swaps);
-        printf("Tempo: %fs\n", runtime);
-        fflush(stdout);
+            double runtime = (double)(end - start) / CLOCKS_PER_SEC;
 
-        free(arr);
+            printf("\n**** Lista aleatória de tamanho [%d] com estratégia de pivô [%s] **** ", sizes[i], pivotStrategies[j]);
+            printf("\n\nComparações: %lld\n", comparisons);
+            printf("Swaps: %lld\n", swaps);
+            printf("Tempo: %fs\n", runtime);
+            fflush(stdout);
+
+            free(arr);
+        }
     }
-}
 
     return 0;
 }
