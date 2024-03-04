@@ -61,9 +61,12 @@ int main() {
         if (file == NULL) {
             generateRandomNumbers(arr, sizes[i]);
         } else {
-            for (int j = 0; j < sizes[i]; j++) {
-                fscanf(file, "%d", &arr[j]);
-            }
+          for (int j = 0; j < sizes[i]; j++) {
+              if (fscanf(file, "%d", &arr[j]) != 1) {
+                  printf("Erro ao ler o arquivo.\n");
+                  return 1; 
+              }
+          }
             fclose(file);
         }
 
