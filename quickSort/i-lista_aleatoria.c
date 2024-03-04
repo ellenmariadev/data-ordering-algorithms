@@ -92,8 +92,10 @@ void quickSort(int arr[], int low, int high, long long int* comparisons, long lo
 }
 
 void generateRandomNumbers(int arr[], int size) {
+    srand(time(NULL));
+
     for (int i = 0; i < size; i++) {
-        arr[i] = rand() % size;
+        arr[i] = rand();
     }
 }
 
